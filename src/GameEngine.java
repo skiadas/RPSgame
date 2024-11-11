@@ -1,5 +1,6 @@
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Scanner;
 
 public class GameEngine {
@@ -7,24 +8,26 @@ public class GameEngine {
     private final PrintStream out;
     private final Scanner scanner;
     private final AiPlayer aiPlayer = new AiPlayer();
+    private final PlayChoiceFactory playChoiceFactory;
 
-    public GameEngine(InputStream in, PrintStream out) {
+    public GameEngine(InputStream in, PrintStream out, PlayChoiceFactory choiceFactory) {
         this.in = in;
         this.out = out;
         this.scanner = new Scanner(in);
+        playChoiceFactory = choiceFactory;
     }
 
     void run() {
         while (true) {
-            displayMessage("Choose rock-paper-scissors");
+            displayMessage("Choose " + getChoicesString());
             if (gameOver()) break;
             String choice = getNextChoice();
-            PlayChoice playerPlay = convertToPlayChoice(choice);
+            PlayChoice playerPlay = playChoiceFactory.convertToPlayChoice(choice);
             if (playerPlay == null) {
                 displayError("Invalid choice, try again.");
                 continue;
             }
-            PlayChoice aiPlay = aiPlayer.play();
+            RPS aiPlay = aiPlayer.play();
             Result result = compare(playerPlay, aiPlay);
             displayMessage("You played " + choice);
             displayMessage("Enemy played " + aiPlay.toString());
@@ -32,6 +35,15 @@ public class GameEngine {
 
         }
         displayMessage("Goodbye!");
+    }
+
+    private String getChoicesString() {
+        List<PlayChoice> allChoices = playChoiceFactory.getAllChoices();
+        String s = "";
+        for (PlayChoice choice : allChoices) {
+            s += "-" + choice;
+        }
+        return s.substring(1);
     }
 
     private String getNextChoice() {
@@ -48,15 +60,6 @@ public class GameEngine {
 
     private void displayMessage(String msg) {
         out.println(msg);
-    }
-
-    private PlayChoice convertToPlayChoice(String choice) {
-        switch (choice) {
-            case "Rock": return PlayChoice.Rock;
-            case "Paper": return PlayChoice.Paper;
-            case "Scissors": return PlayChoice.Scissors;
-            default: return null;
-        }
     }
 
     private PlayChoice generateAiChoice() {

@@ -6,12 +6,12 @@ public class AiPlayer {
     public AiPlayer() {
     }
 
-    PlayChoice play() {
+    RPS play() {
         int i = random.nextInt(3);
         switch (i) {
-            case 0: return PlayChoice.Rock;
-            case 1: return PlayChoice.Paper;
-            case 2: return PlayChoice.Scissors;
+            case 0: return RPS.Rock;
+            case 1: return RPS.Paper;
+            case 2: return RPS.Scissors;
             default: return null;
         }
     }

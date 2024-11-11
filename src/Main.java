@@ -1,5 +1,5 @@
 public class Main {
     public static void main(String[] args) {
-        new GameEngine(System.in, System.out).run();
+        new GameEngine(System.in, System.out, new RPSLSFactory()).run();
     }
 }
